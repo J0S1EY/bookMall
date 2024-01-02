@@ -1,0 +1,63 @@
+<header>
+    <div class="m-2">
+        <nav class="navbar navbar-expand-lg navbar-light ">
+            <div class="container-fluid pe-lg-2 p-0">
+                <a class="navbar-brand fw-bold fs-3" href="#">Book Mall </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link pe-3 me-4 fw-bold active" aria-current="page" href="/">HOME</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link pe-3 me-4 fw-bold" href="#">OFFERS</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link pe-3 me-4 fw-bold" href="#">AUTHOR</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link pe-3 me-4 fw-bold" href="#">MY ACCOUNT</a>
+                            <div class="dropdown-content">
+                                {{#if user}}
+                                <a>Hi, {{user}}</a>
+                                <a>My Orders</a>
+                                <a href="/user-logout">Logout</a>
+
+                                {{else}}
+                                <a href="/user-login">Login</a>
+                                {{/if}}
+                            </div>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link pe-3 me-4 fw-bold" href="#">ABOUT US</a>
+                        </li>
+                    </ul>
+                    <ul class="navbar-nav icons ms-auto mb-2 mb-lg-0">
+                        <li class=" nav-item pe-3">
+                            <a href="" class="fas fa-heart">
+
+                                <span class="num rounded-circle">1</span>
+                            </a>
+                        </li>
+                        <li class=" nav-item pe-3">
+                            <a href="/user-cart" class="fas fa-shopping-bag">
+                            {{#if cartCount }}
+                                <span class="num rounded-circle">{{cartCount}}</span>
+                                {{/if}}
+                            </a>
+                        </li>
+                        <li class=" nav-item">
+                            <span class="">items:</span>
+                            <span class="fw-bold">$150.00</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+    </div>
+</header>

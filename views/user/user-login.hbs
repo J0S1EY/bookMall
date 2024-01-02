@@ -1,0 +1,46 @@
+<link rel='stylesheet' href='/stylesheets/userLogin.css' />
+
+<div class="grid-container ">
+    <div class=" d-lg-flex flex-lg-row d-flex flex-column-reverse bg-light mt-5 " style="height: fit-content;">
+        <div class="p-5" id="2">
+            <p class="p-green">For you in Book Mall deals</p>
+            <P class="fs-4 fw-bold">Explore Your One-Stop-Shop </P>
+            <p class="fs-4 fw-bold">For All Your Requirements</p>
+            <p class="text-muted mb-4">Great Offers, Best Deals</p>
+            <div class="btn btn-success px-4">SHOP NOW</div>
+        </div>
+        <div id="1">
+            <img src="https://www.freepnglogos.com/uploads/vegetables-png/vegetables-about-our-philosophy-super-healthy-kids-23.png"
+                class="w-75 h-75" alt="">
+        </div>
+    </div>
+    <div class="form-structor">
+        <form action="/user-register" method="post" enctype="application/x-www-form-urlencoded">
+            <div class="signup">
+                <h2 class="form-title" id="signup"><span>or</span>Sign up</h2>
+                <div class="form-holder">
+                    <input id="userName" name="userName" type="text" class="input" placeholder="Name" />
+                    <input id="email" name="email" type="email" class="input" placeholder="Email" />
+                    <input id="password" name="password" type="password" class="input" placeholder="Password" />
+                </div>
+                <button class="submit-btn" type="submit">Sign up</button>
+                {{#if logErr}}
+                    <p style="color: red;">{{logErr}}</p>
+                    {{/if}}
+            </div>
+        </form>
+        <form action="/user-login" method="post" enctype="application/x-www-form-urlencoded">
+            <div class="login slide-up">
+                <div class="center">
+                    <h2 class="form-title" id="login"><span>or</span>Log in</h2>
+                    <div class="form-holder">
+                        <input id="userName" name="userName" type="email" class="input" placeholder="Email" />
+                        <input id="password" name="password" type="password" class="input" placeholder="Password" />
+                    </div>
+                    <button type="submit" class="submit-btn">Log in</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script type='text/javascript' src='/javascripts/userLogin.js'></script>

@@ -1,0 +1,580 @@
+/* Navbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+.navbar .navbar-nav .nav-item .active {
+  color: #67971f;
+}
+
+a.fas {
+  position: relative;
+  font-size: 20px;
+  text-decoration: none;
+  color: black;
+}
+
+.num {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  top: -8px;
+  left: 18px;
+  width: 15px;
+  height: 15px;
+  font-size: 8px;
+  background-color: #67971f;
+  color: white;
+}
+
+
+.col-lg-3 .btn.btn-primary {
+  width: 100%;
+  height: 43px;
+  box-shadow: none;
+  outline: none;
+  background-color: #67971f;
+  color: white;
+  font-weight: 800;
+  padding: 0px 15px;
+  line-height: 22px;
+  border: none;
+}
+
+.col-lg-3 .btn.btn-primary:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.col-lg-3 .btn.btn-primary:hover {
+  background-color: #aadf5a;
+
+}
+
+.col-lg-3 ul {
+  width: 100%;
+}
+
+.col-lg-9 .btn.btn-secondary {
+  width: 100%;
+  height: 100% !important;
+  box-shadow: none;
+  outline: none;
+  background-color: transparent;
+  color: black;
+  font-weight: 800;
+  padding: 0px 15px;
+  line-height: 22px;
+  border: none;
+}
+
+
+.col-lg-9 .btn.btn-primary {
+  background-color: #67971f;
+  border: none;
+  height: 100%;
+  width: 100px;
+}
+
+.col-lg-9 .btn.btn-primary:hover {
+  background-color: #aadf5a;
+}
+
+.col-lg-9 ul {
+  width: 100%;
+}
+
+.fas.fa-phone {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #67971f;
+}
+
+.p-green {
+  letter-spacing: 2px;
+  color: #67971f;
+  font-size: 14px;
+}
+
+input {
+  width: 230px;
+  border: none;
+  outline: none;
+}
+
+p {
+  margin: 0%;
+}
+
+.text-muted {
+  font-size: 14px;
+}
+
+
+.btn.btn-success {
+  color: white;
+  background-color: #67971f;
+  outline: none;
+  border: none;
+}
+
+.btn.btn-success:hover {
+  background-color: #aadf5a;
+}
+
+@media(max-width:1022px) {
+  input {
+    width: 100%;
+    border: none;
+  }
+
+}
+
+
+/* products */
+
+@import url("https://fonts.googleapis.com/css2?family=Istok+Web:wght@400;700&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  font-family: "Istok Web", sans-serif;
+}
+
+
+
+.card {
+  position: relative;
+  width: 300px;
+  height: 480px;
+  background: #191919;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.card::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  width: 100%;
+  height: 100%;
+  background: #ffce00;
+  transform: skewY(345deg);
+  transition: 0.5s;
+}
+
+.card:hover::before {
+  top: -70%;
+  transform: skewY(390deg);
+}
+
+.card::after {
+  content: "CORSAIR";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  font-weight: 600;
+  font-size: 6em;
+  color: rgba(0, 0, 0, 0.1);
+}
+
+.card .imgBox {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top: 20px;
+  z-index: 1;
+}
+
+/*
+.card .imgBox img {
+    max-width: 100%;
+    
+    transition: .5s;
+}
+
+.card:hover .imgBox img {
+    max-width: 50%;
+      
+}
+*/
+.card .contentBox {
+  position: relative;
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  z-index: 2;
+}
+
+.card .contentBox h3 {
+  font-size: 18px;
+  color: white;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.card .contentBox .price {
+  font-size: 20px;
+  color: white;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.card .contentBox .buy {
+  position: relative;
+  top: 100px;
+  opacity: 0;
+  padding: 10px 30px;
+  margin-top: 15px;
+  color: #000000;
+  text-decoration: none;
+  background: #ffce00;
+  border-radius: 30px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: 0.5s;
+}
+
+.card:hover .contentBox .buy {
+  top: 0;
+  opacity: 1;
+}
+
+.mouse {
+  height: 300px;
+  width: auto;
+}
+
+.tm-bg-primary-dark {
+  background-color: #435c70;
+}
+
+.tm-logout-icon {
+  font-size: 1.5em;
+}
+
+.tm-mt-big {
+  margin-top: 57px;
+}
+
+.tm-mb-big {
+  margin-bottom: 60px;
+}
+
+.tm-mt-small {
+  margin-top: 20px;
+}
+
+.tm-block-col {
+  margin-bottom: 30px;
+}
+
+.tm-block {
+  padding: 40px;
+  -webkit-box-shadow: 1px 1px 5px 0 #455c71;
+  -moz-box-shadow: 1px 1px 5px 0 #455c71;
+  box-shadow: 1px 1px 5px 0 #455c71;
+  min-height: 350px;
+  height: 100%;
+  max-height: 450px;
+}
+
+.tm-block-avatar,
+.tm-block-settings {
+  max-height: none;
+}
+
+.tm-block-avatar {
+  height: auto;
+}
+
+.tm-block-h-auto {
+  min-height: 1px;
+  max-height: none;
+  height: auto;
+}
+
+.tm-block-scroll {
+  overflow-y: scroll;
+}
+
+.tm-block-overflow {
+  overflow: hidden;
+}
+
+.tm-block-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 30px;
+}
+
+.custom-select {
+  width: 100%;
+  border: none;
+  color: #acc6de;
+  height: 50px;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  -ms-appearance: none;
+  -o-appearance: none;
+  appearance: none;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  -ms-border-radius: 0;
+  -o-border-radius: 0;
+  border-radius: 0;
+  padding: 15px;
+  background: url(../img/arrow-down.png) 98% no-repeat #50657b;
+}
+
+.custom-select:focus {
+  outline: 0;
+}
+
+.tm-trash-icon {
+  color: #6e6c6c;
+  cursor: pointer;
+}
+
+.tm-trash-icon:hover {
+  color: #9f1321;
+}
+
+.tm-footer {
+  background-color: #567086;
+  padding-top: 30px;
+  padding-bottom: 30px;
+  -webkit-box-shadow: 0 -3px 5px 0 rgba(69, 92, 113, 0.59);
+  -moz-box-shadow: 0 -3px 5px 0 rgba(69, 92, 113, 0.59);
+  box-shadow: 0 -3px 5px 0 rgba(69, 92, 113, 0.59);
+}
+
+.custom-select {
+  height: 50px;
+  border-radius: 0;
+}
+
+.tm-product-img-dummy {
+  max-width: 100%;
+  height: 240px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  background: #aaa;
+}
+
+.tm-product-img-edit {
+  max-width: 100%;
+  position: relative;
+}
+
+.tm-product-img-edit i {
+  display: none;
+  position: absolute;
+}
+
+.tm-product-img-edit:hover i {
+  display: block;
+}
+
+.tm-upload-icon {
+  background: #455c71;
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  text-align: center;
+  padding-top: 15px;
+  font-size: 22px;
+}
+
+.tm-login-col {
+  max-width: 470px;
+}
+
+
+
+.tm-avatar {
+  width: 345px;
+}
+
+.tm-avatar-container {
+  position: relative;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+.tm-avatar-delete-link {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  margin-left: -25px;
+  margin-top: -25px;
+  z-index: 1000;
+  padding: 14px;
+  border-radius: 50%;
+  background-color: rgba(57, 78, 100, 0.7);
+  display: inline-block;
+  width: 50px;
+  height: 50px;
+  text-align: center;
+  display: none;
+  transition: all 0.2s ease;
+}
+
+.tm-avatar-container:hover .tm-avatar-delete-link {
+  display: block;
+}
+
+.tm-col-avatar {
+  max-width: 425px;
+  width: 37%;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+.tm-col-account-settings {
+  max-width: 822px;
+  width: 63%;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+.form-control {
+  background-color: #54657d;
+  color: #fff;
+  border: 0;
+}
+
+.form-control:focus {
+  background-color: #60738e;
+  color: #fff;
+  border-color: transparent;
+  box-shadow: 0 0 0 0.1rem rgb(180, 206, 233, 0.5);
+}
+
+.form-group label {
+  color: #fff;
+  margin-bottom: 10px;
+}
+
+.tm-hide-sm {
+  display: block;
+}
+
+.tm-list-group {
+  counter-reset: myOrderedListItemsCounter;
+  padding-left: 0;
+}
+
+.tm-list-group>li {
+  list-style-type: none;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 8px;
+}
+
+.tm-list-group>li:hover {
+  color: #0266c4;
+}
+
+.tm-list-group>li:before {
+  counter-increment: myOrderedListItemsCounter;
+  content: counter(myOrderedListItemsCounter) ".";
+  margin-right: 0.5em;
+}
+
+.tm-list {
+  padding-left: 30px;
+}
+
+.tm-list>li {
+  margin-bottom: 20px;
+}
+
+.form-control {
+  padding: 19px 18px;
+  border-radius: 0;
+  height: 50px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.grid-container {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+
+/* Add CSS for the dropdown */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+.dropdown-content a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+.dropdown-content a:hover {
+  background-color: #f1f1f1;
+}
+
+
+

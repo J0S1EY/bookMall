@@ -1,0 +1,27 @@
+
+    {{!-- Products --}}
+
+   <div class="container">
+        <div class="grid-container">
+            {{#each products}}
+            <div class="col-md-3 card m-2" style="background-color: rgb(43, 41, 41);">
+                <div class="imgBox">
+                    <img src="/images/bookImg/{{this._id}}.jpeg"
+                        alt={{this.bookName}} class="mouse">
+                </div>
+                <div class="contentBox">
+                    <h3>{{this.bookName}}</h3>
+                    <h2 class="price">{{this.price}}<small>.99</small> €</h2>
+                    <a href="#" class="buy">Buy Now</a>
+                </div>
+            </div>
+            {{/each}}
+        </div>
+   </div>
+
+
+
+
+
+
+  

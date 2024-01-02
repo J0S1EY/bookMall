@@ -1,0 +1,102 @@
+<div class="col-xl-9 col-lg-10 col-md-12 col-sm-12 mx-auto container mt-5">
+    <div class="tm-bg-primary-dark tm-block tm-block-h-auto">
+        <div class="row">
+            <div class="col-12">
+                <h2 class="tm-block-title d-inline-block">Update Product</h2>
+            </div>
+        </div>
+        <div class="row tm-edit-product-row">
+            <div class="col-xl-6 col-lg-6 col-md-12">
+
+                <form action="/admin/update-product/{{product._id}}" method="post" enctype="multipart/form-data"
+                    class="tm-edit-product-form">
+                    <div class="form-group mb-3">
+                        <label for="bookName">Book Name
+                        </label>
+                        <input id="bocategory:okName" name="bookName" type="text" class="form-control validate"
+                            required="" value="{{product.bookName}}">
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="author">Author
+                        </label>
+                        <input id="author" name="author" type="text" class="form-control validate" required=""
+                            value="{{product.author}}">
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="category">Category</label>
+                        <select class="custom-select tm-select-accounts" id="category" name="category">
+                            <option selected="">{{product.category}}</option>
+                            <option value="History">History</option>
+                            <option value="Science fiction">Science fiction</option>
+                            <option value="Horror"> Horror</option>
+                            <option value="Biography"> Biography</option>
+                            <option value="Mystery"> Mystery</option>
+                            <option value="Thriller"> Thriller</option>
+                            <option value="Novel"> Novel</option>
+                            <option value="Humor"> Humor</option>
+                            <option value="Spirituality"> Spirituality</option>
+                        </select>
+                    </div>
+                    <div class="row">
+                        <div class="form-group mb-3 col-xs-12 col-sm-6">
+                            <label for="language">Language
+                            </label>
+                            <input id="language" name="language" type="text" class="form-control validate" required=""
+                                value="{{product.language}}">
+                        </div>
+                        <div class="form-group mb-3 col-xs-12 col-sm-6">
+                            <label for="isbn">ISBN
+                            </label>
+                            <input id="isbn" name="isbn" type="text" class="form-control validate" required=""
+                                value="{{product.isbn}}">
+                        </div>
+                    </div>
+            </div>
+            <div class="col-xl-6 col-lg-6 col-md-12 mx-auto mb-4">
+                <div class="tm-product-img-dummy mx-auto">
+                    <img src="/images/bookImg/{{product._id}}.jpeg" alt="" style="width: 165px; height:auto"
+                        id="imgThumbnail">
+                </div>
+                <div class="custom-file mt-2 mb-3">
+                    <input id="imgFile" name="imgFile" type="file" style="display:none;" onchange="viewThumbnail(event)">
+                    <input type="button" class="btn btn-primary d-flex align-items-center justify-content-center"
+                        value="Update Image" onclick="document.getElementById('imgFile').click();"
+                        >
+                </div>
+                <div class="row">
+                    <div class="form-group mb-2 col-xs-12 col-sm-6">
+                        <label for="publishingDate">Price
+                        </label>
+                        <input id="price" name="price" type="number" class="form-control validate hasDatepicker"
+                            data-large-mode="true" value="{{product.price}}">
+                    </div>
+                    <div class="form-group mb-2 col-xs-12 col-sm-6">
+                        <label for="units">Units
+                        </label>
+                        <input id="units" name="units" type="text" class="form-control validate" required=""
+                            value="{{product.units}}">
+                    </div>
+
+                </div>
+            </div>
+            <div class="form-group mb-3">
+                <label for="bookSummary">Book Summary</label>
+                <textarea class="form-control validate" rows="3" id="bookSummary" name="bookSummary"
+                    required="">{{product.bookSummary}}</textarea>
+            </div>
+            <div class="col-12">
+                <button type="submit" class="btn btn-primary d-flex align-items-center justify-content-center">Update
+                    Product </button>
+
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    function viewThumbnail(event) {
+        document.getElementById("imgThumbnail").src = URL.createObjectURL(event.target.files[0])
+    }
+
+</script>

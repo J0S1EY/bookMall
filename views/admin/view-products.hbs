@@ -1,0 +1,40 @@
+<div class="container">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">No</th>
+                <th scope="col">Book</th>
+                <th scope="col">Author</th>
+                <th scope="col">Category</th>
+                <th scope="col">Price</th>
+                <th scope="col">Language</th>
+                <th scope="col">Units</th>
+                <th scope="col">Cover</th>
+                <th scope="col">Product Action</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            {{#each books}}
+            <tr>
+                <th scope="row">{{incrementIndex @index}}</th>
+                <td>{{this.bookName}}</td>
+                <td>{{this.author}}</td>
+                <td>{{this.category}}</td>
+                <td>{{this.price}}</td>
+                <td>{{this.language}}</td>
+                <td>{{this.units}}</td>
+                <td><img style="width: 50px; height: 50px" src="/images/bookImg/{{this._id}}.jpeg"></td>
+                <td><button type="button" class="btn btn-secondary btn-sm">
+                     {{!-- query method for passing multiple values --}}
+                        <a style="text-decoration: none; color:white" href="/admin/edit-product/{{this._id}}">Edit</a></button> 
+                        {{!-- param method --}}
+                        {{!-- <a style="text-decoration: none; color:white" href="/admin/update-product/{{this._id}}">Update</a></button>  --}}
+                    <button type="button" class="btn btn-danger btn-sm" onclick="return confirm('are you want delete {{this.bookName}} ?')">
+                        <a style="text-decoration: none; color:white" href="/admin/delete-product/?id={{this._id}}&productName={{this.bookName}}">Delete</a></button>
+                </td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</div>
