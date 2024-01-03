@@ -152,6 +152,13 @@ router.post("/changeCartQuantity", (req, res, next) => {
 
 })
 
+router.get('/user-checkOut', verifyLogin, async (req, res, next) => {
+  let userId = req.session.userId;
+  let cartAmount = await userService.getOrderAmount(userId)
+  console.log(cartAmount)
+  res.render('user/place-order',{cartCount})
+});
+
 
 
 

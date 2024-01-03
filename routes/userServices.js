@@ -207,14 +207,40 @@ async function getCart(userId) {
                 }
             },
             {
+                // $project: {
+                //     item: 1,
+                //     quantity: 1,
+                //     product: {
+                //         $arrayElemAt: ["$product", 0]
+                //     }
+                // }
+
+                /* order sum */
+
                 $project: {
                     item: 1,
                     quantity: 1,
                     product: {
-                        $arrayElemAt: ["$product", 0]
+                        $arrayElemAt: [{ $ifNull: ['$product', [null]] }, 0]
+                    },
+                    total: {
+                        $sum: {
+                            $multiply: [
+                                {
+                                    $toDouble: {
+                                        $cond: { if: { $isArray: ['$product.price'] }, then: { $arrayElemAt: ['$product.price', 0] }, else: '$product.price' }
+                                    }
+                                },
+                                {
+                                    $toDouble: {
+                                        $cond: { if: { $isArray: ['$quantity'] }, then: { $arrayElemAt: ['$quantity', 0] }, else: '$quantity' }
+                                    }
+                                }
+                            ]
+                        }
                     }
                 }
-            }
+            },
             // {
             //     $lookup: {
             //         from: bookCollection,
@@ -294,6 +320,54 @@ async function changeCartCount(cartId, proId, count, quantity) {
 
 }
 
+async function getOrderAmount(userId) {
+    try {
+        const db = await connectToCluster();
+
+        const OrderTotal = await db.collection(userCart).aggregate([
+            {
+                $match: { user: new ObjectId(userId) },
+            },
+            {
+                $unwind: "$myCart"
+            },
+            {
+                $project: {
+                    item: "$myCart.item",
+                    quantity: "$myCart.quantity"
+
+                }
+            },
+            {
+                $lookup: {
+                    from: bookCollection,
+                    localField: "item",
+                    foreignField: "_id",
+                    as: "product"
+
+                }
+            },
+            {
+                $project: {
+                    item: 1,
+                    quantity: 1,
+                    product: {
+                        $arrayElemAt: ["$product", 0]
+                    },
+                }
+            }
+        ]).toArray();
+        // console.log("cart:",cartItems);
+
+        return OrderTotal.length === 0 ? [] : OrderTotal;
+
+    } catch (error) {
+        // console.log(error);
+        return error
+    }
+
+}
+
 
 
 
@@ -305,6 +379,7 @@ module.exports = {
     getCart,
     cartCount,
     changeCartCount,
+    getOrderAmount
 
 
 }

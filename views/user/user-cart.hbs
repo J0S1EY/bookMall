@@ -16,11 +16,11 @@
                             <table class="table shoping-cart-table">
                                 <tbody>
                                     <tr>
-                                    
+
                                         <td width="90">
                                             <div class="cart-product-imitation">
-                                                <img src="/images/bookImg/{{this.product._id}}.jpeg" alt="" height="75px"
-                                                    width="75px">
+                                                <img src="/images/bookImg/{{this.product._id}}.jpeg" alt=""
+                                                    height="75px" width="75px">
                                             </div>
                                         </td>
                                         <td class="desc">
@@ -42,33 +42,37 @@
                                             <p class="small">
                                                 {{this.product.bookSummary}}
                                             </p>
-
-                                            <div class="m-t-sm" style="float: right;">
-                                                <a href="#" class="text-muted"><i class="fa fa-gift"></i> Add gift
-                                                    package</a>
-
-                                                <a href="#" class="text-muted"><i class="fa fa-trash"></i> Remove
-                                                    item</a>
-                                            </div>
                                         </td>
-
-                                        <td>
-                                            {{this.product.price}}
-                                            <s class="small text-muted">$230,00</s>
+                                        <td width="100">
+                                           Price: ${{this.product.price}}
+                                           <br>
+                                           Total: $<span class="small text-muted" id="{{this.product._id}}price">{{this.total}}</span>
+                                            {{!-- <s class="small text-muted">$230,00</s> --}}
                                         </td>
-                                        
-                                        <td width="50">
+                                        <td width="50"> 
                                             <div class="quantity">
-                                                <button class="minus" aria-label="Decrease" onclick="changeQuantity('{{this._id}}','{{this.product._id}}',-1)" >&minus;</button>
-                                                {{!-- <input id="{{this.product._id}}" type="number" class="input-box" value={{this.quantity}} min="1"
-                                                    max="10"> --}}
-                                                    <span class="input-box" id="{{this.product._id}}">{{this.quantity}}</span>
-                                                <button class="plus" aria-label="Increase" onclick="changeQuantity('{{this._id}}','{{this.product._id}}',1)">&plus;</button>
+                                                <button class="minus" aria-label="Decrease"
+                                                    onclick="changeQuantity('{{this.product.price}}','{{this._id}}','{{this.product._id}}',-1)">&minus;</button>
+                                                {{!-- <input id="{{this.product._id}}" type="number" class="input-box"
+                                                    value={{this.quantity}} min="1" max="10"> --}}
+                                                <span class="input-box"
+                                                    id="{{this.product._id}}">{{this.quantity}}</span>
+                                                <button class="plus" aria-label="Increase"
+                                                    onclick="changeQuantity('{{this.product.price}}','{{this._id}}','{{this.product._id}}',1)">&plus;</button>
                                             </div>
                                         </td>
+
                                     </tr>
                                 </tbody>
                             </table>
+                            <div class="m-t-sm" style="float: right;">
+                                <a href="#" class="text-muted"><i class="fa fa-gift"></i> Add gift
+                                    package</a>
+
+                                <a href="#" class="text-muted"><i class="fa fa-trash"></i> Remove
+                                    item</a>
+                            </div>
+                            <br>
                             <hr>
                             {{/each}}
                         </div>
@@ -79,7 +83,6 @@
                     <div class="ibox-content">
                         <button class="btn btn-primary pull-right"><i class="fa fa fa-shopping-cart"></i>
                             Checkout</button>
-
                         <button class="btn btn-white"> <i class="fa fa-arrow-left"></i>
                             <a href="/" style="text-decoration: none;"> Continue shopping </a>
                         </button>
@@ -105,7 +108,8 @@
                         </span>
                         <div class="m-t-sm">
                             <div class="btn-group">
-                                <a href="#" class="btn btn-primary btn-sm"><i class="fa fa-shopping-cart"></i>
+                                <a href="/user-checkOut" class="btn btn-primary btn-sm"><i
+                                        class="fa fa-shopping-cart"></i>
                                     Checkout</a>
                                 <a href="#" class="btn btn-white btn-sm"> Cancel</a>
                             </div>
@@ -157,6 +161,3 @@
         </div>
     </div>
 </div>
-
-
-

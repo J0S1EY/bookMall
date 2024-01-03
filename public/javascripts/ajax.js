@@ -50,8 +50,9 @@
 //     }
 // })();
 
-function changeQuantity(cartId, proId, count) {
+function changeQuantity(price,cartId, proId, count) {
     let quantity = parseInt(document.getElementById(proId).innerHTML);
+    
 
     $.ajax({
         url: "/changeCartQuantity",
@@ -68,6 +69,7 @@ function changeQuantity(cartId, proId, count) {
                 location.reload();
             } else {
                 document.getElementById(proId).innerHTML = quantity + count;
+                document.getElementById(proId+"price").innerHTML = (quantity + count)*price;
             }
         }
     });
