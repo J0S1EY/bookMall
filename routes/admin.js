@@ -99,12 +99,17 @@ router.post('/update-product/:id', async function (req, res) {
   try {
     const id = req.params.id;
     const data = req.body;
-    const image = req.files.imgFile
+
     await dbServices.updateProduct(id, data);
     res.status(200)
     res.redirect('/admin/')
-    if (image) {
-      image.mv(`./public/images/bookImg/${id}.jpeg`)
+    if (req.files && req.files.imgFile) {
+      const image = req.files.imgFile;
+      image.mv(`./public/images/bookImg/${id}.jpeg`, (err) => {
+        if (err) {
+          console.error('Error moving image:', err);
+        }
+      })
     }
   } catch (error) {
     console.error('Error updating product:', error);

@@ -7,7 +7,17 @@ const userCollection = process.env.USER_COLLECTION
 const bookCollection = process.env.COLLECTION_1
 
 // admin add book  
-async function addProduct(product) {
+async function addProduct(data) {
+    let product = {
+        bookName: data.bookName,
+        author: data.author,
+        category: data.category,
+        language: data.language,
+        isbn: data.isbn,
+        price: parseInt(data.price),
+        units: parseInt(data.units),
+        bookSummary: data.bookSummary
+    }
     try {
         const db = await connectToCluster();
         const collection = db.collection(bookCollection);
@@ -89,8 +99,8 @@ function updateProduct(id, data) {
                         category: data.category,
                         language: data.language,
                         isbn: data.isbn,
-                        price: data.price,
-                        units: data.units,
+                        price: parseInt(data.price),
+                        units: parseInt(data.units),
                         bookSummary: data.bookSummary,
                     },
                 }

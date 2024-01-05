@@ -6,7 +6,7 @@
             <div class="col-md-9">
                 <div class="ibox">
                     <div class="ibox-title">
-                        <span class="pull-right"><strong>{{cartCount}}</strong> items</span>
+                        <span id="cartCount" class="pull-right"><strong>{{cartCount}}</strong></span> items
                         <h5>Items in your cart</h5>
                     </div>
                     <div class="ibox-content">
@@ -52,13 +52,13 @@
                                         <td width="50"> 
                                             <div class="quantity">
                                                 <button class="minus" aria-label="Decrease"
-                                                    onclick="changeQuantity('{{this.product.price}}','{{this._id}}','{{this.product._id}}',-1)">&minus;</button>
+                                                    onclick="changeQuantity('{{../userId}}','{{this.product.price}}','{{this._id}}','{{this.product._id}}',-1)">&minus;</button>
                                                 {{!-- <input id="{{this.product._id}}" type="number" class="input-box"
                                                     value={{this.quantity}} min="1" max="10"> --}}
                                                 <span class="input-box"
                                                     id="{{this.product._id}}">{{this.quantity}}</span>
                                                 <button class="plus" aria-label="Increase"
-                                                    onclick="changeQuantity('{{this.product.price}}','{{this._id}}','{{this.product._id}}',1)">&plus;</button>
+                                                    onclick="changeQuantity('{{../userId}}','{{this.product.price}}','{{this._id}}','{{this.product._id}}',1)">&plus;</button>
                                             </div>
                                         </td>
 
@@ -95,11 +95,9 @@
                         <h5>Cart Summary</h5>
                     </div>
                     <div class="ibox-content">
-                        <span>
-                            Total
-                        </span>
+                        
                         <h2 class="font-bold">
-                            $390,00
+                         Total: $<span id="totalValue">{{cartTotal}}</span> 
                         </h2>
 
                         <hr>

@@ -148,3 +148,13 @@ button:hover {
     cursor: pointer;
     background: #428a7d;
 }
+
+@media (max-width: 768px) {
+    .d-flex {
+        flex-direction: column;
+    }
+
+    form {
+        margin-right: 0;
+    }
+}

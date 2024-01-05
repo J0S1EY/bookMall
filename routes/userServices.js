@@ -323,7 +323,6 @@ async function changeCartCount(cartId, proId, count, quantity) {
 async function getOrderAmount(userId) {
     try {
         const db = await connectToCluster();
-
         const OrderTotal = await db.collection(userCart).aggregate([
             {
                 $match: { user: new ObjectId(userId) },
@@ -355,11 +354,21 @@ async function getOrderAmount(userId) {
                         $arrayElemAt: ["$product", 0]
                     },
                 }
-            }
-        ]).toArray();
-        // console.log("cart:",cartItems);
+            },
+            {
+                $group: {
+                    _id: null,
+                    cartTotal: {
+                        $sum: { $multiply: ["$quantity", "$product.price"] }
 
-        return OrderTotal.length === 0 ? [] : OrderTotal;
+                    }
+                }
+            }
+
+        ]).toArray();
+        // console.log("cart:", OrderTotal[0].cartTotal);
+
+        return OrderTotal.length === 0 ? [] : OrderTotal[0].cartTotal;
 
     } catch (error) {
         // console.log(error);

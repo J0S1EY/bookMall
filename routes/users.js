@@ -6,6 +6,7 @@ var userService = require('./userServices');
 const session = require('express-session');
 
 var cartCount = null
+var cartTotal = 0
 /* GET home page. */
 router.get('/', async function (req, res, next) {
   let user = req.session.user
@@ -15,9 +16,10 @@ router.get('/', async function (req, res, next) {
     const products = await dbServices.getAllBooks();
     if (userId) {
       cartCount = await userService.cartCount(userId)
+      cartTotal = await userService.getOrderAmount(userId)
 
     }
-    res.render('user/view-products', { title: 'Book Mall', products, user, cartCount, userId });
+    res.render('user/view-products', { title: 'Book Mall', products, user, cartCount, userId, cartTotal });
 
   } catch (error) {
     console.error('Error fetching books:', error);
@@ -105,9 +107,9 @@ router.get('/user-cart', verifyLogin, async (req, res) => {
   let user = req.session.user;
   let userId = req.session.userId;
   userService.getCart(userId).then((response) => {
-    let cartProduct = response
-    //  console.log("Cart result", response)
-    res.render('user/user-cart', { cartProduct, user, cartCount });
+    let cartProduct = response;
+    // console.log("Cart result", response)
+    res.render('user/user-cart', { cartProduct, user, cartCount, cartTotal, userId });
   })
   // try {
   //   let items=userService.getCart(userId)
@@ -142,9 +144,12 @@ router.post("/changeCartQuantity", (req, res, next) => {
   let proId = req.body.proId
   let count = req.body.count
   let quantity = req.body.quantity
+  let userId=req.body.userId
   userService.changeCartCount(cartId, proId, count, quantity)
-    .then((data) => {
+    .then(async(data) => {
       // console.log(data)
+      data.totalValue=await userService.getOrderAmount(userId);
+      cartCount=await userService.cartCount(userId)
       res.status(200).json(data);
     }).catch((error) => {
       res.status(500).json(error);
@@ -154,9 +159,9 @@ router.post("/changeCartQuantity", (req, res, next) => {
 
 router.get('/user-checkOut', verifyLogin, async (req, res, next) => {
   let userId = req.session.userId;
-  let cartAmount = await userService.getOrderAmount(userId)
-  console.log(cartAmount)
-  res.render('user/place-order',{cartCount})
+  cartTotal = await userService.getOrderAmount(userId)
+  // console.log(cartAmount)
+  res.render('user/place-order', { cartCount, cartTotal })
 });
 
 

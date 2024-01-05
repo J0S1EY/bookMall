@@ -50,10 +50,8 @@
 //     }
 // })();
 
-function changeQuantity(price,cartId, proId, count) {
+function changeQuantity(userId, price, cartId, proId, count) {
     let quantity = parseInt(document.getElementById(proId).innerHTML);
-    
-
     $.ajax({
         url: "/changeCartQuantity",
         method: "post",
@@ -61,15 +59,19 @@ function changeQuantity(price,cartId, proId, count) {
             cartId: cartId,
             proId: proId,
             count: count,
-            quantity: quantity
+            quantity: quantity,
+            userId: userId
         },
         success: (response) => {
+            document.getElementById("totalValue").innerHTML = response.totalValue;
             if (response.removeProduct) {
                 alert("Product remove from cart")
                 location.reload();
+                document.getElementById("cartCount").innerHTML = response.cartCount;
             } else {
                 document.getElementById(proId).innerHTML = quantity + count;
-                document.getElementById(proId+"price").innerHTML = (quantity + count)*price;
+                document.getElementById(proId + "price").innerHTML = (quantity + count) * price;
+              
             }
         }
     });
