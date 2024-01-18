@@ -138,18 +138,18 @@ router.get('/add-cart/:id', verifyLogin, async (req, res) => {
 
 })
 
-router.post("/changeCartQuantity", (req, res, next) => {
+router.post("/changeCartQuantity",verifyLogin, (req, res, next) => {
   // console.log(req.body)
   let cartId = req.body.cartId
   let proId = req.body.proId
   let count = req.body.count
   let quantity = req.body.quantity
-  let userId=req.body.userId
+  let userId = req.body.userId
   userService.changeCartCount(cartId, proId, count, quantity)
-    .then(async(data) => {
+    .then(async (data) => {
       // console.log(data)
-      data.totalValue=await userService.getOrderAmount(userId);
-      cartCount=await userService.cartCount(userId)
+      data.totalValue = await userService.getOrderAmount(userId);
+      cartCount = await userService.cartCount(userId)
       res.status(200).json(data);
     }).catch((error) => {
       res.status(500).json(error);
@@ -157,12 +157,16 @@ router.post("/changeCartQuantity", (req, res, next) => {
 
 })
 
-router.get('/user-checkOut', verifyLogin, async (req, res, next) => {
+router.get('/user-checkOut',verifyLogin, async (req, res, next) => {
   let userId = req.session.userId;
   cartTotal = await userService.getOrderAmount(userId)
   // console.log(cartAmount)
-  res.render('user/place-order', { cartCount, cartTotal })
+  res.render('user/place-order', { cartCount, cartTotal,userId })
 });
+
+router.post('/place-order',verifyLogin, async (req, res) => {
+  console.log(req.body)
+})
 
 
 

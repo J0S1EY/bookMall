@@ -10,23 +10,16 @@
     margin-left: auto;
 }
 
-@media (min-width: 1200px) {
-    .container {
-        max-width: 1140px;
-    }
-}
+
 
 .d-flex {
-    display: flex;
-    flex-direction: row;
+
     background: #f6f6f6;
     border-radius: 0 0 5px 5px;
     padding: 25px;
 }
 
-form {
-    flex: 4;
-}
+
 
 .Yorder {
     flex: 2;
@@ -59,7 +52,7 @@ h2 {
 label,
 table {
     display: block;
-    margin: 15px;
+    margin: 20px;
 }
 
 label>span {
@@ -150,11 +143,35 @@ button:hover {
 }
 
 @media (max-width: 768px) {
-    .d-flex {
+    form {
+        display: flex; 
         flex-direction: column;
     }
 
     form {
         margin-right: 0;
+    }
+    .order{
+        width: 100%;
+    }
+    .payment{
+        width: 100%;
+    }
+}
+
+@media (min-width: 1200px) {
+    .container {
+        max-width: 1140px;
+    }
+    .order{
+        width: 60%;
+    }
+    .payment{
+        width: 40%;
+    }
+    form {
+        display: flex; 
+        flex-direction: row
+        
     }
 }

@@ -376,9 +376,23 @@ async function getOrderAmount(userId) {
     }
 
 }
+async function placeOrder() {
+    try {
+        
+    } catch (error) {
+        
+    }
 
+}
 
+async function getOrderList() {
+    try {
+        
+    } catch (error) {
+        
+    }
 
+}
 
 
 module.exports = {
@@ -388,7 +402,8 @@ module.exports = {
     getCart,
     cartCount,
     changeCartCount,
-    getOrderAmount
-
-
+    getOrderAmount,
+    placeOrder,
+    getOrderList
 }
+
