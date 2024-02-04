@@ -2,12 +2,13 @@ const { resolve, reject } = require("promise");
 const { connectToCluster } = require("../config/dbConnect");
 require("dotenv").config({ path: '../config/.env' });
 const bcript = require("bcrypt");
-const { ObjectId } = require("mongodb");
+const { ObjectId, Timestamp } = require("mongodb");
 const { response } = require("express");
 
-const userCollection = process.env.USER_COLLECTION
-const userCart = process.env.USER_CART
-const bookCollection = process.env.COLLECTION_1
+const userCollection = process.env.USER_COLLECTION;
+const userCart = process.env.USER_CART;
+const bookCollection = process.env.COLLECTION_1;
+const order = process.env.ORDER_COLLECTIONS;
 
 async function signUp(userData) {
     try {
@@ -367,6 +368,7 @@ async function getOrderAmount(userId) {
 
         ]).toArray();
         // console.log("cart:", OrderTotal[0].cartTotal);
+        console.log(OrderTotal)
 
         return OrderTotal.length === 0 ? [] : OrderTotal[0].cartTotal;
 
@@ -376,23 +378,122 @@ async function getOrderAmount(userId) {
     }
 
 }
-async function placeOrder() {
-    try {
-        
-    } catch (error) {
-        
-    }
 
+function placeOrder(orderData, cartProducts, cartTotal) {
+    return new Promise(async (resolve, reject) => {
+        try {
+            // console.log(orderData);
+            const db = await connectToCluster();
+            let status = orderData.paymentMode === 'COD' ? 'placed' : 'pending';
+            let currentDate = new Date();
+            const formattedDate = currentDate.toLocaleString('en-IN', {
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric',
+                hour: 'numeric',
+                minute: 'numeric',
+                hour12: true,
+            });
+            let orderDetail = {
+                userId: new ObjectId(orderData.userId),
+                date: formattedDate,
+                orderStatus: status,
+                paymentMode: orderData.paymentMode,
+                products: cartProducts,
+                orderAmount: cartTotal,
+                deliveryDetails: {
+                    firstName: orderData.firstName,
+                    lastName: orderData.lastName,
+                    company: orderData.company,
+                    country: orderData.country,
+                    streetName: orderData.streetName,
+                    apartment: orderData.apartment,
+                    city: orderData.city,
+                    state: orderData.state,
+                    zip: orderData.zip,
+                    tel: orderData.tel,
+                    email: orderData.email,
+                }
+            };
+
+            db.collection(order).insertOne(orderDetail).then((result) => {
+                db.collection(userCart).deleteOne({ user: new ObjectId(orderData.userId) })
+                resolve({ status: true, statusCode: 200, message: "Order placed successfully" });
+            })
+
+        } catch (error) {
+            console.error("Error placing order:", error);
+            reject({ status: false, statusCode: 500, message: "Failed to place order", error });
+        }
+    });
 }
 
-async function getOrderList() {
-    try {
-        
-    } catch (error) {
-        
-    }
 
+
+function getOrderList(userId) {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const db = await connectToCluster();
+            const cart = await db.collection(userCart).findOne({ user: new ObjectId(userId) });
+
+            if (cart && cart.myCart) {
+                resolve({ statusCode: 200, message: "Cart found", cartItems: cart.myCart });
+            } else {
+                resolve({ statusCode: 404, message: "Cart not found or empty", cartItems: [] });
+            }
+        } catch (error) {
+            reject({ statusCode: 500, message: "Failed to retrieve cart", error: error });
+        }
+    });
 }
+
+function orderHistory(userId) {
+    return new Promise((resolve, reject) => {
+        connectToCluster()
+            .then(db => {
+                return db.collection(order).aggregate([
+                    { $match: { userId: new ObjectId(userId) } },
+                    // { $unwind: "$products" },
+                    {
+                        $lookup: {
+                            from: bookCollection,
+                            localField: "products.item",
+                            foreignField: "_id",
+                            as: "product"
+                        }
+                    },
+                    {
+                        $project: {
+                            userId: "$userId",
+                            orderStatus: "$orderStatus",
+                            paymentMode: "$paymentMode",
+                            orderAmount: "$orderAmount",
+                            date: "$date",
+                            deliveryDetails: "$deliveryDetails",
+                            product: "$product"
+
+                        }
+                    },
+
+                ]).toArray();
+            })
+            .then(OrderData => {
+                const response = {
+                    statusCode: 200,
+                    message: "Order history retrieved successfully",
+                    orderData: OrderData
+                };
+                // console.log(OrderData);
+                resolve(response);
+            })
+            .catch(error => {
+                console.error("Failed to retrieve Order History:", error);
+                reject({ statusCode: 500, message: "Failed to retrieve Order History", error });
+            });
+    });
+}
+
+
 
 
 module.exports = {
@@ -404,6 +505,7 @@ module.exports = {
     changeCartCount,
     getOrderAmount,
     placeOrder,
-    getOrderList
+    getOrderList,
+    orderHistory
 }
 

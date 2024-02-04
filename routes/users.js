@@ -108,7 +108,7 @@ router.get('/user-cart', verifyLogin, async (req, res) => {
   let userId = req.session.userId;
   userService.getCart(userId).then((response) => {
     let cartProduct = response;
-    // console.log("Cart result", response)
+    console.log("Cart result", response)
     res.render('user/user-cart', { cartProduct, user, cartCount, cartTotal, userId });
   })
   // try {
@@ -138,7 +138,7 @@ router.get('/add-cart/:id', verifyLogin, async (req, res) => {
 
 })
 
-router.post("/changeCartQuantity",verifyLogin, (req, res, next) => {
+router.post("/changeCartQuantity", verifyLogin, (req, res, next) => {
   // console.log(req.body)
   let cartId = req.body.cartId
   let proId = req.body.proId
@@ -157,16 +157,45 @@ router.post("/changeCartQuantity",verifyLogin, (req, res, next) => {
 
 })
 
-router.get('/user-checkOut',verifyLogin, async (req, res, next) => {
+router.get('/user-checkOut', verifyLogin, async (req, res, next) => {
   let userId = req.session.userId;
-  cartTotal = await userService.getOrderAmount(userId)
+  let cartTotal = await userService.getOrderAmount(userId)
   // console.log(cartAmount)
-  res.render('user/place-order', { cartCount, cartTotal,userId })
+  res.render('user/place-order', { cartCount, cartTotal, userId })
 });
 
-router.post('/place-order',verifyLogin, async (req, res) => {
-  console.log(req.body)
-})
+router.post('/place-order', verifyLogin, async (req, res, next) => {
+  try {
+    let orderData = req.body;
+    let cartProducts = await userService.getOrderList(orderData.userId);
+    let cartTotal = await userService.getOrderAmount(orderData.userId);
+
+    const result = await userService.placeOrder(orderData, cartProducts.cartItems, cartTotal);
+
+    if (result.status) {
+      res.status(result.statusCode).json({ success: true, message: result.message });
+    } else {
+      res.status(result.statusCode).json({ success: false, message: result.message });
+    }
+  } catch (error) {
+    console.error("Error placing order:", error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+});
+
+router.get('/order-history', verifyLogin, async (req, res) => {
+  try {
+    let userId = req.session.userId;
+    const response = await userService.orderHistory(userId);
+    let orderHistory = response.orderData
+    // console.log(orderHistory)
+    res.render('user/order-history', { statusCode: response.statusCode, message: response.message, orderHistory });
+  } catch (error) {
+    // console.error("Error fetching order history:", error);
+    res.status(error.statusCode || 500).send(error.message || "Internal Server Error");
+  }
+});
+
 
 
 

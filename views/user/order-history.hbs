@@ -1,0 +1,57 @@
+<link rel='stylesheet' href='/stylesheets/orderHistory.css' />
+<div class="container mt-5">
+    <div class="d-flex justify-content-center row">
+        <div class="col-md-10">
+            <div class="rounded">
+                <div class="table-responsive table-borderless">
+
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                {{!-- <th class="text-center">
+                                    <div class="toggle-btn">
+                                        <div class="inner-circle"></div>
+                                    </div>
+                                </th> --}}
+                                <th>Order ID</th>
+                                <th>Product</th>
+                                <th>Status</th>
+                                <th>Total</th>
+                                <th>Created</th>
+                                <th>Shipping Details</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+
+                        <tbody class="table-body">
+                            {{#each orderHistory}}
+                            <tr class="cell-1">
+                                {{!-- <td class="text-center">
+                                    <div class="toggle-btn">
+                                        <div class="inner-circle"></div>
+                                    </div>
+                                </td> --}}
+                                <td># {{this._id}}</td>
+                                <td>
+                                    {{#each this.product}}
+                                    <ul>
+                                        <li>{{this.bookName}}</li>
+                                    </ul>
+                                    {{/each}}
+                                </td>
+                                <td><span class="badge badge-success">{{this.orderStatus}}</span></td>
+                                <td>{{this.orderAmount}}</td>
+                                <td>{{this.date}}</td>
+                                {{!-- <td><i class="fa fa-ellipsis-h text-black-50"></i></td> --}}
+                                <td>{{this.deliveryDetails.firstName}} {{this.deliveryDetails.lastName}}</td>
+                            </tr>
+                            {{/each}}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/javascripts/orderHistory.js"></script>
