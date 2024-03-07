@@ -5,15 +5,19 @@ var dbServices = require('./adminServices')
 var userService = require('./userServices');
 const session = require('express-session');
 
+
+
 var cartCount = null
 var cartTotal = 0
-/* GET home page. */
+
+/* HOME PAGE */
 router.get('/', async function (req, res, next) {
   let user = req.session.user
   let userId = req.session.userId
 
   try {
     const products = await dbServices.getAllBooks();
+
     if (userId) {
       cartCount = await userService.cartCount(userId)
       cartTotal = await userService.getOrderAmount(userId)
@@ -26,6 +30,8 @@ router.get('/', async function (req, res, next) {
     res.status(500).json({ error: 'Error fetching books.' });
   }
 });
+
+/* LOGIN PAGE */
 
 router.get('/user-login', async function (req, res) {
   try {
@@ -45,7 +51,7 @@ router.get('/user-login', async function (req, res) {
   }
 })
 
-//register
+/* REGISTER */
 
 router.post('/user-register', async (req, res) => {
   try {
@@ -56,8 +62,8 @@ router.post('/user-register', async (req, res) => {
   }
 });
 
-//login
 
+/* LOGIN */
 
 router.post('/user-login', async (req, res) => {
   try {
@@ -77,7 +83,8 @@ router.post('/user-login', async (req, res) => {
     res.status(404).json(error);
   }
 });
-// logout
+
+/* LOG-OUT */
 
 router.get('/user-logout', async (req, res) => {
   try {
@@ -88,6 +95,8 @@ router.get('/user-logout', async (req, res) => {
     res.status(404).json(error);
   }
 })
+
+/* VERIFY LOGIN MIDILWARE */
 
 const verifyLogin = (req, res, next) => {
   try {
@@ -103,12 +112,15 @@ const verifyLogin = (req, res, next) => {
   }
 };
 
+/* USER CART */
+
 router.get('/user-cart', verifyLogin, async (req, res) => {
   let user = req.session.user;
   let userId = req.session.userId;
-  userService.getCart(userId).then((response) => {
+  userService.getCart(userId).then(async (response) => {
     let cartProduct = response;
-    console.log("Cart result", response)
+    cartTotal = await userService.getOrderAmount(userId)
+    // console.log("Cart result", response)
     res.render('user/user-cart', { cartProduct, user, cartCount, cartTotal, userId });
   })
   // try {
@@ -122,13 +134,14 @@ router.get('/user-cart', verifyLogin, async (req, res) => {
 
 })
 
-router.get('/add-cart/:id', verifyLogin, async (req, res) => {
+/* ADD CART */
 
+router.get('/add-cart/:id', verifyLogin, async (req, res) => {
   let proId = req.params.id;
   let userId = req.session.userId;
   try {
     let data = userService.addToCart(proId, userId)
-    //  console.log(proId, userId)
+    // console.log(proId)
     res.status(200)
     res.redirect('/')
   } catch (error) {
@@ -138,7 +151,9 @@ router.get('/add-cart/:id', verifyLogin, async (req, res) => {
 
 })
 
-router.post("/changeCartQuantity", verifyLogin, (req, res, next) => {
+/* CHANGE QUANTITY  */
+
+router.post("/changeCartQuantity", (req, res, next) => {
   // console.log(req.body)
   let cartId = req.body.cartId
   let proId = req.body.proId
@@ -148,8 +163,8 @@ router.post("/changeCartQuantity", verifyLogin, (req, res, next) => {
   userService.changeCartCount(cartId, proId, count, quantity)
     .then(async (data) => {
       // console.log(data)
-      data.totalValue = await userService.getOrderAmount(userId);
       cartCount = await userService.cartCount(userId)
+      data.totalValue = await userService.getOrderAmount(userId);
       res.status(200).json(data);
     }).catch((error) => {
       res.status(500).json(error);
@@ -157,31 +172,59 @@ router.post("/changeCartQuantity", verifyLogin, (req, res, next) => {
 
 })
 
+/* CHECK OUT*/
+
 router.get('/user-checkOut', verifyLogin, async (req, res, next) => {
   let userId = req.session.userId;
-  let cartTotal = await userService.getOrderAmount(userId)
+  cartTotal = await userService.getOrderAmount(userId)
   // console.log(cartAmount)
   res.render('user/place-order', { cartCount, cartTotal, userId })
 });
 
-router.post('/place-order', verifyLogin, async (req, res, next) => {
-  try {
-    let orderData = req.body;
-    let cartProducts = await userService.getOrderList(orderData.userId);
-    let cartTotal = await userService.getOrderAmount(orderData.userId);
-
-    const result = await userService.placeOrder(orderData, cartProducts.cartItems, cartTotal);
-
-    if (result.status) {
-      res.status(result.statusCode).json({ success: true, message: result.message });
-    } else {
-      res.status(result.statusCode).json({ success: false, message: result.message });
-    }
-  } catch (error) {
-    console.error("Error placing order:", error);
-    res.status(500).json({ success: false, message: "Internal Server Error" });
-  }
+/* PLACE ORDER*/
+router.post('/place-order', verifyLogin, (req, res, next) => {
+  let orderData = req.body;
+  userService.getOrderList(orderData.userId)
+    .then(cartProducts => userService.getOrderAmount(orderData.userId)
+      .then(cartTotal => userService.placeOrder(orderData, cartProducts.cartItems, cartTotal)
+        .then(result => {
+          if (orderData.paymentMode === 'COD') {
+            res.status(result.statusCode).json({ codSuccess: true, message: result.message });
+          } else {
+            let orderId = result.response.insertedId;
+            let amount = cartTotal * 100
+            userService.generateRazorpay(orderId, amount)
+              .then(response => {
+                res.json(response);
+              })
+              .catch(error => {
+                res.status(500).json({ success: false, message: "Payment Error", error });
+              });
+          }
+        })
+        .catch(error => {
+          console.error("Error placing order:", error);
+          res.status(500).json({ success: false, message: "Internal Server Error", error });
+        })
+      )
+      .catch(error => {
+        console.error("Error getting order amount:", error);
+        res.status(500).json({ success: false, message: "Internal Server Error", error });
+      })
+    )
+    .catch(error => {
+      console.error("Error getting order list:", error);
+      res.status(500).json({ success: false, message: "Internal Server Error", error });
+    });
 });
+
+/* PAYMENT VERIFY*/
+
+router.post('/verify_payment', (req, res) => {
+  console.log("verify payment", req.body)
+})
+
+/* ORDER  HISTORY */
 
 router.get('/order-history', verifyLogin, async (req, res) => {
   try {
@@ -189,12 +232,56 @@ router.get('/order-history', verifyLogin, async (req, res) => {
     const response = await userService.orderHistory(userId);
     let orderHistory = response.orderData
     // console.log(orderHistory)
-    res.render('user/order-history', { statusCode: response.statusCode, message: response.message, orderHistory });
+    res.render('user/order-history', { statusCode: response.statusCode, message: response.message, orderHistory, cartCount });
   } catch (error) {
     // console.error("Error fetching order history:", error);
     res.status(error.statusCode || 500).send(error.message || "Internal Server Error");
   }
 });
+
+
+/* VIEW PRODUCT */
+
+router.get('/view-product', verifyLogin, async (req, res) => {
+  try {
+    const proId = req.query.id;
+    const result = await userService.viewProduct(proId);
+    const products = await dbServices.getAllBooks();
+
+    // console.log(result.data);
+
+    res.render('user/view-product', { result, products, cartCount, cartTotal });
+  } catch (error) {
+    console.error('Error in viewing product:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+
+/* ADD CART FROM VIEW PRODUCT */
+
+router.post('/add-to-cart', verifyLogin, async (req, res) => {
+  try {
+    let productId = req.body.productId;
+    let quantity = parseInt(req.body.quantity);
+    let userId = req.session.userId;
+    // Call the `addCart` function to add the product to the cart
+    if (userId) {
+      const result = await userService.addCart(userId, productId, quantity, cartTotal);
+      // Send a success response back to the client
+      res.json({ success: true, message: result });
+    } else {
+      res.json({ success: false, message: "login error" })
+
+    }
+
+  } catch (error) {
+    // If an error occurs, send an appropriate error response
+    console.error("Error adding to cart:", error);
+    res.status(500).json({ success: false, error: "Internal Server Error" });
+  }
+});
+
 
 
 

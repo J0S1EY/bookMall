@@ -35,7 +35,9 @@
                                 <td>
                                     {{#each this.product}}
                                     <ul>
-                                        <li>{{this.bookName}}</li>
+                                        <a href="/view-product/?id={{this._id}}">
+                                            <li>{{this.bookName}}</li>
+                                        </a>
                                     </ul>
                                     {{/each}}
                                 </td>

@@ -83,7 +83,14 @@
             <div class="contentBox">
                 <h3>{{this.bookName}}</h3>
                 <h2 class="price">{{this.price}}<small>.99</small> €</h2>
-                <a href="/add-cart/{{this._id}}" class="buy">ADD CART</a>
+                <div class="buttonBox">
+                    <button class="buy">
+                        <a href="/add-cart/{{this._id}}">ADD CART</a>
+                    </button>
+                    <button class="buy">
+                        <a href="/view-product/?id={{this._id}}">VIEW</a>
+                    </button>
+                </div>
             </div>
         </div>
         {{/each}}

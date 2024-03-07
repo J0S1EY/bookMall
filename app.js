@@ -26,7 +26,7 @@ app.use(session({
   secret: 'secretkey',
   resave: false, 
   saveUninitialized: false, 
-  cookie: { maxAge: 60000 }
+  cookie: { maxAge: 100000 }
 }));
 // View engine setup
 app.set('views', path.join(__dirname, 'views'));

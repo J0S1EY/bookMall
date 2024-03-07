@@ -4,11 +4,17 @@ require("dotenv").config({ path: '../config/.env' });
 const bcript = require("bcrypt");
 const { ObjectId, Timestamp } = require("mongodb");
 const { response } = require("express");
+const Razorpay = require('razorpay');
+
 
 const userCollection = process.env.USER_COLLECTION;
 const userCart = process.env.USER_CART;
 const bookCollection = process.env.COLLECTION_1;
 const order = process.env.ORDER_COLLECTIONS;
+const keyId = process.env.KEY_ID;
+const secretKey = process.env.KEY_SECRET;
+
+/* SIGN UP */
 
 async function signUp(userData) {
     try {
@@ -30,6 +36,8 @@ async function signUp(userData) {
         }
     }
 }
+
+/* LOGIN */
 
 async function login(userData) {
     const db = await connectToCluster();
@@ -68,6 +76,8 @@ async function login(userData) {
         };
     }
 }
+
+/* ADD CART */
 
 async function addToCart(proId, userId) {
     const cartProduct = {
@@ -179,6 +189,7 @@ async function addToCart(proId, userId) {
 //     });
 // }
 
+/* GET CART */
 
 async function getCart(userId) {
     try {
@@ -267,6 +278,8 @@ async function getCart(userId) {
     }
 }
 
+/* CART COUNT */
+
 async function cartCount(userId) {
     const db = await connectToCluster();
     let count = 0
@@ -280,6 +293,8 @@ async function cartCount(userId) {
         reject(error)
     })
 }
+
+/* CHANGE COUNT */
 
 async function changeCartCount(cartId, proId, count, quantity) {
     const db = await connectToCluster()
@@ -318,8 +333,9 @@ async function changeCartCount(cartId, proId, count, quantity) {
     }).catch((error) => {
         reject(error)
     })
-
 }
+
+/* GET ORDER AMOUNT */
 
 async function getOrderAmount(userId) {
     try {
@@ -368,7 +384,7 @@ async function getOrderAmount(userId) {
 
         ]).toArray();
         // console.log("cart:", OrderTotal[0].cartTotal);
-        console.log(OrderTotal)
+        // console.log(OrderTotal)
 
         return OrderTotal.length === 0 ? [] : OrderTotal[0].cartTotal;
 
@@ -378,6 +394,8 @@ async function getOrderAmount(userId) {
     }
 
 }
+
+/* PLACE ORDER */
 
 function placeOrder(orderData, cartProducts, cartTotal) {
     return new Promise(async (resolve, reject) => {
@@ -416,9 +434,9 @@ function placeOrder(orderData, cartProducts, cartTotal) {
                 }
             };
 
-            db.collection(order).insertOne(orderDetail).then((result) => {
+            db.collection(order).insertOne(orderDetail).then((response) => {
                 db.collection(userCart).deleteOne({ user: new ObjectId(orderData.userId) })
-                resolve({ status: true, statusCode: 200, message: "Order placed successfully" });
+                resolve({ status: true, statusCode: 200, message: "Order placed successfully", response });
             })
 
         } catch (error) {
@@ -428,7 +446,7 @@ function placeOrder(orderData, cartProducts, cartTotal) {
     });
 }
 
-
+/* GET ORDER LIST */
 
 function getOrderList(userId) {
     return new Promise(async (resolve, reject) => {
@@ -446,6 +464,8 @@ function getOrderList(userId) {
         }
     });
 }
+
+/* ORDER HISTORY */
 
 function orderHistory(userId) {
     return new Promise((resolve, reject) => {
@@ -471,7 +491,6 @@ function orderHistory(userId) {
                             date: "$date",
                             deliveryDetails: "$deliveryDetails",
                             product: "$product"
-
                         }
                     },
 
@@ -493,6 +512,96 @@ function orderHistory(userId) {
     });
 }
 
+function viewProduct(proId) {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const db = await connectToCluster();
+            const book = await db.collection(bookCollection).findOne({ _id: new ObjectId(proId) });
+
+            if (!book) {
+                const notFoundError = new Error('Product not found');
+                notFoundError.statusCode = 404;
+                throw notFoundError;
+            }
+            resolve({ status: 200, data: book, message: 'Product retrieved successfully' });
+        } catch (error) {
+            console.error('Error in viewProduct:', error);
+            // Set default status code and message
+            let statusCode = 500;
+            let errorMessage = 'Internal Server Error';
+            // Customize status code and message based on the error
+            if (error.statusCode) {
+                statusCode = error.statusCode;
+                errorMessage = error.message;
+            }
+            reject({ status: statusCode, message: errorMessage });
+        }
+    });
+}
+
+/* ADD CART */
+
+async function addCart(userId, proId, qty) {
+    const cartProduct = {
+        item: new ObjectId(proId),
+        quantity: qty
+    };
+    return new Promise(async (resolve, reject) => {
+        try {
+            const db = await connectToCluster();
+            let cartData = await db.collection(userCart).findOne({ user: new ObjectId(userId) });
+            if (cartData) {
+                const proExistIndex = cartData.myCart.findIndex(product => product.item == proId);
+                if (proExistIndex !== -1) {
+                    await db.collection(userCart).updateOne(
+                        { user: new ObjectId(userId), 'myCart.item': new ObjectId(proId) },
+                        { $inc: { 'myCart.$.quantity': qty } }
+                    );
+                    resolve("Quantity updated successfully.");
+                } else {
+                    await db.collection(userCart).updateOne(
+                        { user: new ObjectId(userId) },
+                        { $push: { myCart: cartProduct } }
+                    );
+                    resolve("Product added to cart successfully.");
+                }
+            } else {
+                const cartItem = {
+                    user: new ObjectId(userId),
+                    myCart: [cartProduct]
+                };
+                await db.collection(userCart).insertOne(cartItem);
+                resolve("New cart created with the product.");
+            }
+        } catch (error) {
+            reject(error);
+        }
+    });
+}
+
+/* PAYMENT */
+
+function generateRazorpay(orderId, price) {
+    return new Promise((resolve, reject) => {
+        const instance = new Razorpay({ key_id: keyId, key_secret: secretKey });
+        const options = {
+            amount: price,
+            currency: "INR",
+            receipt: orderId.toString()
+        };
+        instance.orders.create(options, (err, order) => {
+            if (err) {
+                console.error("Error generating Razorpay order:", err);
+                reject({ success: false, statusCode: 500, message: "Failed to generate payment order" });
+            } else {
+                resolve({ success: true, statusCode: 200, message: "Payment order generated successfully", order: order });
+            }
+        });
+    });
+}
+
+
+
 
 
 
@@ -506,6 +615,8 @@ module.exports = {
     getOrderAmount,
     placeOrder,
     getOrderList,
-    orderHistory
+    orderHistory,
+    viewProduct,
+    addCart,
+    generateRazorpay
 }
-
