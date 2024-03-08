@@ -6,23 +6,25 @@ $("#checkOutForm").submit((e) => {
         method: "post",
         data: $('#checkOutForm').serialize(),
     }).done((response) => {
-        handleOrderResponse(response);
+        handleOrderResponse(response, response.orderData
+        );
     }).fail((xhr, status, error) => {
         console.log("Error placing order:", error);
         alert("Failed to place order. Please try again.");
     });
 });
 
-function handleOrderResponse(response) {
-    alert(response.message);
+function handleOrderResponse(response, orderData) {
+    let razorPayment = response.razorData
+    alert(razorPayment.message);
     if (response.codSuccess) {
         window.location.href = "/order-history";
     } else {
-        razorpayPayment(response.order);
+        razorpayPayment(razorPayment.order, orderData);
     }
 }
 
-function razorpayPayment(order) {
+function razorpayPayment(order, orderData) {
     var options = {
         "key": "rzp_test_1wfC342gQGFoVg",
         "amount": order.amount, // Convert amount to paise if it's in rupees
@@ -39,12 +41,12 @@ function razorpayPayment(order) {
             window.location.href = "/order-history";
         },
         "prefill": {
-            "name": "Gaurav Kumar",
-            "email": "gaurav.kumar@example.com",
-            "contact": "9000090000"
+            "name": orderData.firstName + orderData.lastName,
+            "email": orderData.email,
+            "contact": orderData.tel
         },
         "notes": {
-            "address": "Razorpay Corporate Office"
+            "address": orderData.streetName + orderData.apartment + orderData.city
         },
         "theme": {
             "color": "#3399cc"

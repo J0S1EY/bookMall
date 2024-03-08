@@ -182,41 +182,27 @@ router.get('/user-checkOut', verifyLogin, async (req, res, next) => {
 });
 
 /* PLACE ORDER*/
-router.post('/place-order', verifyLogin, (req, res, next) => {
-  let orderData = req.body;
-  userService.getOrderList(orderData.userId)
-    .then(cartProducts => userService.getOrderAmount(orderData.userId)
-      .then(cartTotal => userService.placeOrder(orderData, cartProducts.cartItems, cartTotal)
-        .then(result => {
-          if (orderData.paymentMode === 'COD') {
-            res.status(result.statusCode).json({ codSuccess: true, message: result.message });
-          } else {
-            let orderId = result.response.insertedId;
-            let amount = cartTotal * 100
-            userService.generateRazorpay(orderId, amount)
-              .then(response => {
-                res.json(response);
-              })
-              .catch(error => {
-                res.status(500).json({ success: false, message: "Payment Error", error });
-              });
-          }
-        })
-        .catch(error => {
-          console.error("Error placing order:", error);
-          res.status(500).json({ success: false, message: "Internal Server Error", error });
-        })
-      )
-      .catch(error => {
-        console.error("Error getting order amount:", error);
-        res.status(500).json({ success: false, message: "Internal Server Error", error });
-      })
-    )
-    .catch(error => {
-      console.error("Error getting order list:", error);
-      res.status(500).json({ success: false, message: "Internal Server Error", error });
-    });
+router.post('/place-order', verifyLogin, async (req, res, next) => {
+  try {
+    const orderData = req.body;
+    const cartProducts = await userService.getOrderList(orderData.userId);
+    const cartTotal = await userService.getOrderAmount(orderData.userId);
+    const result = await userService.placeOrder(orderData, cartProducts.cartItems, cartTotal);
+
+    if (orderData.paymentMode === 'COD') {
+      res.status(result.statusCode).json({ codSuccess: true, message: result.message });
+    } else {
+      const orderId = result.response.insertedId;
+      const amount = cartTotal * 100;
+      const razorData = await userService.generateRazorpay(orderId, amount);
+      res.json({ razorData, orderData });
+    }
+  } catch (error) {
+    console.error("Error processing order:", error);
+    res.status(500).json({ success: false, message: "Internal Server Error", error });
+  }
 });
+
 
 /* PAYMENT VERIFY*/
 
@@ -274,7 +260,6 @@ router.post('/add-to-cart', verifyLogin, async (req, res) => {
       res.json({ success: false, message: "login error" })
 
     }
-
   } catch (error) {
     // If an error occurs, send an appropriate error response
     console.error("Error adding to cart:", error);

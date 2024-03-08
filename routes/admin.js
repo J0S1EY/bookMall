@@ -124,6 +124,4 @@ router.get('/out-stocks', function (req, res) {
 },)
 
 
-
-
 module.exports = router;
