@@ -3,8 +3,9 @@ const { connectToCluster } = require("../config/dbConnect");
 require("dotenv").config({ path: '../config/.env' });
 const bcript = require("bcrypt");
 const { ObjectId, Timestamp } = require("mongodb");
-const { response } = require("express");
 const Razorpay = require('razorpay');
+const { createHmac } = require('node:crypto');
+
 
 
 const userCollection = process.env.USER_COLLECTION;
@@ -581,7 +582,7 @@ async function addCart(userId, proId, qty) {
 
 /* PAYMENT */
 
-function generateRazorpay(orderId, price) {
+async function generateRazorpay(orderId, price) {
     return new Promise((resolve, reject) => {
         const instance = new Razorpay({ key_id: keyId, key_secret: secretKey });
         const options = {
@@ -600,7 +601,46 @@ function generateRazorpay(orderId, price) {
     });
 }
 
+async function verifyPayment(razorData) {
+    return new Promise((resolve, reject) => {
+        try {
+            let hash = createHmac('sha256', secretKey)
+                .update(razorData['payment[razorpay_order_id]'] + "|" + razorData['payment[razorpay_payment_id]'])
+                .digest('hex');
 
+            if (hash === razorData['payment[razorpay_signature]']) {
+                resolve({ statusCode: 200, message: 'Payment signature verified successfully.' });
+            } else {
+                resolve({ statusCode: 400, message: 'Invalid signature' });
+            }
+        } catch (error) {
+            reject(error);
+        }
+    });
+}
+
+function changePaymentStatus(orderData) {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const db = await connectToCluster();
+            console.log('Change status:', orderData);
+
+            await db.collection(order).updateOne(
+                { _id: new ObjectId(orderData) },
+                {
+                    $set: {
+                        orderStatus: 'Placed'
+                    }
+                }
+            );
+
+            resolve({ statusCode: 200, message: 'Order status changed successfully.' });
+        } catch (error) {
+            console.error('Error changing order status:', error);
+            reject({ statusCode: 500, message: 'Internal Server Error', error });
+        }
+    });
+}
 
 
 
@@ -618,5 +658,7 @@ module.exports = {
     orderHistory,
     viewProduct,
     addCart,
-    generateRazorpay
+    generateRazorpay,
+    verifyPayment,
+    changePaymentStatus
 }

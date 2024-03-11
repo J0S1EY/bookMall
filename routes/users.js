@@ -207,8 +207,19 @@ router.post('/place-order', verifyLogin, async (req, res, next) => {
 /* PAYMENT VERIFY*/
 
 router.post('/verify_payment', (req, res) => {
-  console.log("verify payment", req.body)
-})
+  let orderData = req.body;
+  userService.verifyPayment(orderData)
+    .then(() => userService.changePaymentStatus(orderData['order[receipt]']))
+    .then(() => {
+      console.log('Payment success');
+      res.json({ status: true, message: "Payment success" });
+    })
+    .catch(error => {
+      console.error('Payment error:', error);
+      res.status(500).json({ status: false, error });
+    });
+});
+
 
 /* ORDER  HISTORY */
 
@@ -243,7 +254,6 @@ router.get('/view-product', verifyLogin, async (req, res) => {
   }
 });
 
-
 /* ADD CART FROM VIEW PRODUCT */
 
 router.post('/add-to-cart', verifyLogin, async (req, res) => {
@@ -266,12 +276,5 @@ router.post('/add-to-cart', verifyLogin, async (req, res) => {
     res.status(500).json({ success: false, error: "Internal Server Error" });
   }
 });
-
-
-
-
-
-
-
 
 module.exports = router;

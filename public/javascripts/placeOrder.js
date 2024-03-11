@@ -63,20 +63,23 @@ function razorpayPayment(order, orderData) {
 function verifyPayment(order, payment) {
     $.ajax({
         url: "/verify_payment",
-        method: "post",
+        method: "POST",
         data: {
             order: order,
             payment: payment
+        },
+        success: function (response) {
+            if (response.status) {
+                alert("Payment successful");
+                location.href = "/";
+            } else {
+                alert("Payment Failed ");
+            }
+        },
+        error: function (xhr, status, error) {
+            console.error('Error verifying payment:', error);
+            alert("Error verifying payment. Please try again later.");
         }
-    }).done((response) => {
-        console.log("verifyPayment", response);
-        if (response.success) {
-            window.location.href = "/order-history";
-        } else {
-            alert("Payment verification failed. Please contact support.");
-        }
-    }).fail((xhr, status, error) => {
-        console.log("Error verifying payment:", error);
-        alert("Failed to verify payment. Please try again.");
     });
 }
+
