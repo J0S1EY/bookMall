@@ -623,8 +623,6 @@ function changePaymentStatus(orderData) {
     return new Promise(async (resolve, reject) => {
         try {
             const db = await connectToCluster();
-            console.log('Change status:', orderData);
-
             await db.collection(order).updateOne(
                 { _id: new ObjectId(orderData) },
                 {

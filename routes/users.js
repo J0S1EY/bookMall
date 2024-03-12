@@ -198,7 +198,6 @@ router.post('/place-order', verifyLogin, async (req, res, next) => {
       res.json({ razorData, orderData });
     }
   } catch (error) {
-    console.error("Error processing order:", error);
     res.status(500).json({ success: false, message: "Internal Server Error", error });
   }
 });
@@ -211,7 +210,6 @@ router.post('/verify_payment', (req, res) => {
   userService.verifyPayment(orderData)
     .then(() => userService.changePaymentStatus(orderData['order[receipt]']))
     .then(() => {
-      console.log('Payment success');
       res.json({ status: true, message: "Payment success" });
     })
     .catch(error => {
@@ -271,8 +269,6 @@ router.post('/add-to-cart', verifyLogin, async (req, res) => {
 
     }
   } catch (error) {
-    // If an error occurs, send an appropriate error response
-    console.error("Error adding to cart:", error);
     res.status(500).json({ success: false, error: "Internal Server Error" });
   }
 });
