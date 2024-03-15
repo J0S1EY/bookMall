@@ -15,7 +15,8 @@
         </div>
     </div>
     <div class="form-structor">
-        <form action="/user-register" method="post" enctype="application/x-www-form-urlencoded">
+        <form action="/user-register" method="post" enctype="application/x-www-form-urlencoded"
+            onsubmit="return validateForm()">
             <div class="signup">
                 <h2 class="form-title" id="signup"><span>or</span>Sign up</h2>
                 <div class="form-holder">
@@ -25,8 +26,8 @@
                 </div>
                 <button class="submit-btn" type="submit">Sign up</button>
                 {{#if logErr}}
-                    <p style="color: red;">{{logErr}}</p>
-                    {{/if}}
+                <p style="color: red;">{{logErr}}</p>
+                {{/if}}
             </div>
         </form>
         <form action="/user-login" method="post" enctype="application/x-www-form-urlencoded">

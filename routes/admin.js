@@ -3,6 +3,8 @@ const fruits = require('../public/javascripts/fruits');
 var router = express.Router();
 var dbServices = require('./adminServices')
 const handlebars = require('handlebars');
+const fs = require('fs');
+const path = require('path');
 
 
 
@@ -38,7 +40,7 @@ router.post('/add-product', async (req, res) => {
       if (err) {
         return res.status(500).json({ error: `Error uploading file: ${err}` });
       } else {
-        return res.json({ message: `Inserted ${result.insertedId} documents into the 'products' collection.` });
+        return res.json({ message: `Inserted ${result.insertedId} documents into the 'products' collection.` }).redirect('/');
       }
 
     });
@@ -63,6 +65,7 @@ router.post('/add-product', async (req, res) => {
 //   })
 // });
 
+/*
 router.get('/delete-product/', async (req, res) => {
   try {
     let id = req.query.id;
@@ -86,6 +89,37 @@ router.get('/delete-product/', async (req, res) => {
     });
   }
 });
+*/
+
+router.get('/delete-product/', async (req, res) => {
+  try {
+    let productId = req.query.id;
+    let result = await dbServices.deleteBook(productId);
+    if (result.success) {
+      // Construct the path to the image file
+      let imagePath = `./public/images/bookImg/${productId}.jpeg`;
+      //console.log("image path", imagePath);
+      // Check if the image file exists
+      if (fs.existsSync(imagePath)) {
+        console.log('Image found. Deleting...');
+        // Attempt to delete the image file
+        fs.unlinkSync(imagePath);
+        //console.log('Image deleted successfully.');
+
+      } else {
+        console.log('Image not found.');
+      }
+      return res.json({ message: `Deleted product with ID ${productId} and its associated image successfully.` });
+    } else {
+      return res.status(404).json({ error: `Product with ID ${productId} not found.` }).redirect('/');
+    }
+  } catch (error) {
+    console.error('Error deleting product:', error);
+    return res.status(500).json({ error: 'Error deleting the product.' });
+  }
+});
+
+
 
 // edit product using call back
 

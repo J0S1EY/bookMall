@@ -1,5 +1,5 @@
 <div class="container">
-    <table class="table">
+    <table class="table" id="productsTable">
         <thead>
             <tr>
                 <th scope="col">No</th>
@@ -42,3 +42,9 @@
         </tbody>
     </table>
 </div>
+
+<script>
+    $(document).ready(function () {
+        $('#productsTable').DataTable();
+    });
+</script>

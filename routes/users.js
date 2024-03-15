@@ -56,11 +56,21 @@ router.get('/user-login', async function (req, res) {
 router.post('/user-register', async (req, res) => {
   try {
     let data = await userService.signUp(req.body);
-    res.status(data.statusCode).json(data.result);
+    if (data.status) {
+      console.log(data);
+      // Registration successful, render user login page
+      res.render('user/user-login', { message: data.message });
+    } else {
+      // Registration failed, send appropriate error response
+      res.status(data.statusCode).json({ error: data.message });
+    }
   } catch (error) {
-    res.status(error.statusCode).json(error);
+    // Handle server errors
+    console.error(error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
+
 
 
 /* LOGIN */
@@ -72,6 +82,7 @@ router.post('/user-login', async (req, res) => {
       req.session.user = data.user,
         req.session.userId = data.userId,
         req.session.login = true
+      req.session.userType = 'user'
       res.status(data.statusCode)
       res.redirect('/')
     } else {
